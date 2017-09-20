@@ -4,13 +4,17 @@ import config
 
 app = Flask(__name__, static_url_path='')
 
+apiKey = "apiKey=" + config.news_api['key']
+newsApiEverythingUrl = "http://beta.newsapi.org/v2/everything?"
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
-@app.route('/indexData')
+@app.route('/everthingData')
 def get_index_data():
-    breitbart = requests.get("http://beta.newsapi.org/v2/everything?source=breitbart-news&apiKey="+config.news_api['key'])
-    cnn = requests.get("http://beta.newsapi.org/v2/everything?source=cnn&apiKey="+config.news_api['key'])
-    fox = requests.get("http://beta.newsapi.org/v2/everything?source=fox-news&apiKey="+config.news_api['key'])
+    sourcesObject = {}
+    sources = ['breitbart', 'cnn', 'fox-news'] # for final release - request.args.getlist('sources')
+    for source in sources:
+        sourcesObject[source] = requests.get(newsApiEverythingUrl + "source=" + source + apiKey)
+    return sourcesObject
